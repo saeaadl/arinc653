@@ -227,4 +227,46 @@ public
 			Actual_Memory_Binding => (reference (mem.part2mem)) applies to partition2_pr;
 	end arincsystem.impl;
 
+
+-------------------------
+
+	system CPU	end CPU;
+
+	system implementation CPU.Two_Cores
+		subcomponents
+			core1: processor powerpc;
+			core2: processor powerpc;
+	end CPU.Two_Cores;
+
+	system implementation arincsystem.impl_multicore
+		subcomponents
+			mem: memory main_memory.impl;
+			cpus: system CPU.Two_Cores;
+			
+			partition1_pr: process partition1_process.impl;
+			partition2_pr: process partition2_process.impl;
+			
+			part1: virtual processor partition1_rt.impl;
+			part2: virtual processor partition2_rt.impl;
+			
+		connections
+			samplingconnection: port partition1_pr.samplingout -> partition2_pr.samplingin;
+			queueingconnection: port partition2_pr.queueingout -> partition1_pr.queueingin;
+		properties
+			--  bind partition process to their associated       
+			--  runtime (virtual processor)
+			Actual_Processor_Binding => (reference (part1)) applies to partition1_pr;
+			Actual_Processor_Binding => (reference (part2)) applies to partition2_pr;
+
+			--  bind runtimes to separate cores
+			Actual_Processor_Binding => (reference (cpus.core1)) applies to part1;
+			Actual_Processor_Binding => (reference (cpus.core1)) applies to part2;
+
+			--  bind partition process to their address spaces       
+			--  (memory components)
+			Actual_Memory_Binding => (reference (mem.part1mem)) applies to partition1_pr;
+			Actual_Memory_Binding => (reference (mem.part2mem)) applies to partition2_pr;
+	end arincsystem.impl_multicore;
+
+
 end arincexample1;

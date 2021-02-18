@@ -3,4 +3,4 @@
 ## Content
 
 * `examples`: Examples part of the annex document
-* `property_set`: ARINC653 AALD property sets
+* `property_sets`: ARINC653 AADL property sets
